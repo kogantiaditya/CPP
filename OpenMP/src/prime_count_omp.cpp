@@ -10,7 +10,7 @@ int prime_count(int n)
 
     int i, j, prime, total_prime = 0;
 #pragma omp parallel for reduction(+ : total_prime) \
-    schedule(static) private(i, j, prime)
+    schedule(static, 100) private(i, j, prime)
     for (i = 2; i <= n; i++)
     {
         prime = 1;
