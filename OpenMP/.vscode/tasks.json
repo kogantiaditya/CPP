@@ -14,13 +14,11 @@
                 "kind": "test",
                 "isDefault": true
             },
-            "command": "env OMP_NUM_THREADS=1 make",
+            "command": "make",
             "args": [
                 "run",
                 "-fopenmp"
-            ],
-            "problemMatcher": [],
-            "dependsOn": "Build C++ project"
+            ]
         },
         {
             "type": "cppbuild",

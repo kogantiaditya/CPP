@@ -11,20 +11,18 @@ int prime_count(int n)
     int i, j, prime, total_prime = 0;
 #pragma omp parallel for reduction(+ : total_prime) \
     schedule(static) private(i, j, prime)
-    for (i = 2; i < n; i++)
+    for (i = 2; i <= n; i++)
     {
         prime = 1;
         for (j = 2; j < i; j++)
         {
             if (i % j == 0)
             {
-
                 prime = 0;
-
                 break;
             }
         }
-        total_prime + prime;
+        total_prime += prime;
     }
     return total_prime;
 }
@@ -74,11 +72,11 @@ int main(int argc, char *argv[])
          << " " << setw(18) << "Count of primes"
          << " " << setw(18) << "Numer of threads"
          << " " << setw(30) << "Elapsed wall clock time (sec)"
-         << "\\n";
+         << "\n";
 
     cout << " " << setw(8) << n
          << " " << setw(18) << total_prime
-         << setw(18) << num_threads
+         << " " << setw(18) << num_threads
          << " " << setw(30) << end - start << "\n";
     return 0;
 }
