@@ -9,8 +9,8 @@ int prime_count(int n)
 {
 
     int i, j, prime, total_prime = 0;
-#pragma omp parallel for reduction(+ : total_prime) \
-    schedule(dynamic, 100) private(i, j, prime)
+#pragma omp parallel for schedule(guided) reduction(+ : total_prime) private(i, j, prime)
+
     for (i = 2; i <= n; i++)
     {
         prime = 1;
