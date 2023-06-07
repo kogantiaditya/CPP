@@ -21,70 +21,40 @@ std::vector<std::vector<int>> matrixMultiplication(const std::vector<std::vector
 }
 
 int main() {
-    // Get matrix size from the user
+    // Read matrix size and logical core count
     int matrixSize;
-    std::cout << "Enter the size of the square matrix: ";
+    int logicalCores;
+    std::cout << "Enter matrix size: ";
     std::cin >> matrixSize;
+    std::cout << "Enter logical core count: ";
+    std::cin >> logicalCores;
     
-    // Create input matrices A and B
-    std::cout << "Enter the elements of matrix A (" << matrixSize << "x" << matrixSize << "):" << std::endl;
-    std::vector<std::vector<int>> A(matrixSize, std::vector<int>(matrixSize));
-    for (int i = 0; i < matrixSize; i++) {
-        for (int j = 0; j < matrixSize; j++) {
-            std::cin >> A[i][j];
+    // Create input matrices A and B with all elements as 1
+    std::vector<std::vector<int>> A(matrixSize, std::vector<int>(matrixSize, 1));
+    std::vector<std::vector<int>> B(matrixSize, std::vector<int>(matrixSize, 1));
+    
+    for (int i = 0; i < 4; i++) {
+        // Perform matrix multiplication and measure the execution time
+        auto startTime = std::chrono::steady_clock::now();
+        std::vector<std::vector<int>> result = matrixMultiplication(A, B);
+        auto endTime = std::chrono::steady_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
+        
+        // Print the result and execution time
+        std::cout << "Matrix Size: " << matrixSize << "x" << matrixSize << ", Logical Cores: " << logicalCores << std::endl;
+        std::cout << "Result:" << std::endl;
+        for (const auto& row : result) {
+            for (int val : row) {
+                std::cout << val << " ";
+            }
+            std::cout << std::endl;
         }
-    }
-    
-    std::cout << "Enter the elements of matrix B (" << matrixSize << "x" << matrixSize << "):" << std::endl;
-    std::vector<std::vector<int>> B(matrixSize, std::vector<int>(matrixSize));
-    for (int i = 0; i < matrixSize; i++) {
-        for (int j = 0; j < matrixSize; j++) {
-            std::cin >> B[i][j];
-        }
-    }
-    
-    // Get chunk size from the user
-    int chunkSize;
-    std::cout << "Enter the chunk size: ";
-    std::cin >> chunkSize;
-    
-    // Get number of threads from the user
-    int numThreads;
-    std::cout << "Enter the number of threads: ";
-    std::cin >> numThreads;
-    
-    // Get the value of P from the user
-    int P;
-    std::cout << "Enter the value of P: ";
-    std::cin >> P;
-    
-    // Set the number of threads
-    omp_set_num_threads(numThreads);
-    
-    // Perform matrix multiplication and measure the execution time
-    auto startTime = std::chrono::steady_clock::now();
-    std::vector<std::vector<int>> result = matrixMultiplication(A, B);
-    auto endTime = std::chrono::steady_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-    
-    // Print the result and execution time
-    std::cout << "Chunk Size: " << chunkSize << ", Thread Count: " << numThreads << std::endl;
-    std::cout << "Result:" << std::endl;
-    for (const auto& row : result) {
-        for (int val : row) {
-            std::cout << val << " ";
-        }
+        std::cout << "Execution Time: " << duration << " ms" << std::endl;
         std::cout << std::endl;
+        
+        // Increase matrix size for the next iteration
+        matrixSize *= 2;
     }
-    std::cout << "Execution Time: " << duration << " ms" << std::endl;
-    
-    // Calculate speed-up and efficiency
-    double serialTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count();
-    double speedup = serialTime / duration;
-    double efficiency = speedup / numThreads;
-    
-    std::cout << "Speed-Up: " << speedup << std::endl;
-    std::cout << "Efficiency: " << efficiency << std::endl;
     
     return 0;
 }
