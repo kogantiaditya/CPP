@@ -36,19 +36,13 @@ void mergeSort(vector<int> &array, int leftsidearray, int rightsidearray)
 
     int middlepartofthearray = (leftsidearray + rightsidearray) / 2;
 
-#pragma omp parallel
+#pragma omp parallel sections
     {
-#pragma omp single nowait
-        {
-#pragma omp task
-            mergeSort(array, leftsidearray, middlepartofthearray);
-        }
+#pragma omp section
+        mergeSort(array, leftsidearray, middlepartofthearray);
 
-#pragma omp single nowait
-        {
-#pragma omp task
-            mergeSort(array, middlepartofthearray + 1, rightsidearray);
-        }
+#pragma omp section
+        mergeSort(array, middlepartofthearray + 1, rightsidearray);
     }
 
     merge(array, leftsidearray, middlepartofthearray, rightsidearray);
@@ -67,7 +61,7 @@ int main()
         array[a] = rand();
 
     double start_time, end_time;
-    int num_threads[] = {1, 2, 4, 8};
+    int num_threads[] = {1, 2};
     int num_tests = sizeof(num_threads) / sizeof(num_threads[0]);
 
     for (int a = 0; a < num_tests; a++)
