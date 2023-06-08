@@ -2,48 +2,46 @@
 #include <vector>
 #include <chrono>
 #include <random>
+#include <omp.h>
 
-// Merge two sorted subarrays into one sorted array
-void merge(std::vector<int>& arr, int left, int middle, int right) {
-    std::vector<int> temp(right - left + 1);
-    int i = left, j = middle + 1, k = 0;
+void merge(std::vector<int>& array, int leftSideArray, int middlePart, int rightSideArray) {
+    std::vector<int> temp(rightSideArray - leftSideArray + 1);
+    int i = leftSideArray, j = middlePart + 1, k = 0;
 
     #pragma omp parallel
     {
         #pragma omp for
-        for (int p = left; p <= right; p++) {
-            if (i <= middle && (j > right || arr[i] <= arr[j]))
-                temp[k++] = arr[i++];
+        for (int p = leftSideArray; p <= rightSideArray; p++) {
+            if (i <= middlePart && (j > rightSideArray || array[i] <= array[j]))
+                temp[k++] = array[i++];
             else
-                temp[k++] = arr[j++];
+                temp[k++] = array[j++];
         }
     }
 
     for (int p = 0; p < k; p++)
-        arr[left + p] = temp[p];
+        array[leftSideArray + p] = temp[p];
 }
 
-// Recursive function to perform merge sort on the array
-void mergeSort(std::vector<int>& arr, int left, int right) {
-    if (left < right) {
-        int middle = left + (right - left) / 2;
+void mergeSort(std::vector<int>& array, int leftSideArray, int rightSideArray) {
+    if (leftSideArray < rightSideArray) {
+        int middlePart = leftSideArray + (rightSideArray - leftSideArray) / 2;
 
         #pragma omp parallel sections
         {
             #pragma omp section
-            mergeSort(arr, left, middle);
+            mergeSort(array, leftSideArray, middlePart);
 
             #pragma omp section
-            mergeSort(arr, middle + 1, right);
+            mergeSort(array, middlePart + 1, rightSideArray);
         }
 
-        merge(arr, left, middle, right);
+        merge(array, leftSideArray, middlePart, rightSideArray);
     }
 }
 
-// Utility function to print the array
-void printArray(const std::vector<int>& arr) {
-    for (int i : arr)
+void printArray(const std::vector<int>& array) {
+    for (int i : array)
         std::cout << i << " ";
     std::cout << std::endl;
 }
@@ -51,25 +49,25 @@ void printArray(const std::vector<int>& arr) {
 int main() {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> dist(0, 100);
+    std::uniform_int_distribution<int> dist(1, 1000);
 
-    std::vector<int> arr(10);
+    std::vector<int> array(10);
     for (int i = 0; i < 10; i++) {
-        arr[i] = dist(gen);
+        array[i] = dist(gen);
     }
 
     std::cout << "Input array: ";
-    printArray(arr);
+    printArray(array);
 
     auto startTime = std::chrono::steady_clock::now();
 
-    mergeSort(arr, 0, arr.size() - 1);
+    mergeSort(array, 0, array.size() - 1);
 
     auto endTime = std::chrono::steady_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
 
     std::cout << "Sorted array: ";
-    printArray(arr);
+    printArray(array);
 
     std::cout << "Execution time: " << duration << " microseconds" << std::endl;
 
