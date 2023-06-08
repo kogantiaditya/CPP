@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <random>
 
 // Merge two sorted subarrays into one sorted array
 void merge(std::vector<int>& arr, int left, int middle, int right) {
@@ -48,7 +49,14 @@ void printArray(const std::vector<int>& arr) {
 }
 
 int main() {
-    std::vector<int> arr = {9, 3, 6, 2, 8, 1, 5, 4, 7, 0};
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dist(0, 100);
+
+    std::vector<int> arr(10);
+    for (int i = 0; i < 10; i++) {
+        arr[i] = dist(gen);
+    }
 
     std::cout << "Input array: ";
     printArray(arr);
