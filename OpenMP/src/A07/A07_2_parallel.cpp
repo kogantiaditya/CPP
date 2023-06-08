@@ -49,15 +49,20 @@ void printArray(const std::vector<int>& array) {
 int main() {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> dist(1, 1000);
+    std::uniform_int_distribution<int> dist(1, 10000);
 
-    std::vector<int> array(10);
-    for (int i = 0; i < 10; i++) {
+    std::vector<int> array(1E8);
+    for (int i = 0; i < 1E8; i++) {
         array[i] = dist(gen);
     }
 
     std::cout << "Input array: ";
-    printArray(array);
+    // printArray(array);
+
+    int numThreads;
+    std::cout << "Enter the number of threads: ";
+    std::cin >> numThreads;
+    omp_set_num_threads(numThreads);
 
     auto startTime = std::chrono::steady_clock::now();
 
@@ -67,7 +72,7 @@ int main() {
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
 
     std::cout << "Sorted array: ";
-    printArray(array);
+    // printArray(array);
 
     std::cout << "Execution time: " << duration << " microseconds" << std::endl;
 

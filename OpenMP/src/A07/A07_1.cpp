@@ -1,58 +1,36 @@
 #include <iostream>
 #include <vector>
-#include <random>
 #include <chrono>
+#include <random>
 
-// Merge two sorted subarrays into one sorted array
-std::vector<int> merge(std::vector<int>& leftArr, std::vector<int>& rightArr) {
-    std::vector<int> mergedArr;
-    int leftSize = leftArr.size();
-    int rightSize = rightArr.size();
-    int i = 0, j = 0;
+void merge(std::vector<int>& array, int leftSideArray, int middlePart, int rightSideArray) {
+    std::vector<int> temp(rightSideArray - leftSideArray + 1);
+    int i = leftSideArray, j = middlePart + 1, k = 0;
 
-    while (i < leftSize && j < rightSize) {
-        if (leftArr[i] <= rightArr[j]) {
-            mergedArr.push_back(leftArr[i]);
-            i++;
-        } else {
-            mergedArr.push_back(rightArr[j]);
-            j++;
-        }
+    for (int p = leftSideArray; p <= rightSideArray; p++) {
+        if (i <= middlePart && (j > rightSideArray || array[i] <= array[j]))
+            temp[k++] = array[i++];
+        else
+            temp[k++] = array[j++];
     }
 
-    while (i < leftSize) {
-        mergedArr.push_back(leftArr[i]);
-        i++;
-    }
-
-    while (j < rightSize) {
-        mergedArr.push_back(rightArr[j]);
-        j++;
-    }
-
-    return mergedArr;
+    for (int p = 0; p < k; p++)
+        array[leftSideArray + p] = temp[p];
 }
 
-// Recursive function to perform merge sort on the array
-std::vector<int> mergeSort(std::vector<int>& arr) {
-    int size = arr.size();
+void mergeSort(std::vector<int>& array, int leftSideArray, int rightSideArray) {
+    if (leftSideArray < rightSideArray) {
+        int middlePart = leftSideArray + (rightSideArray - leftSideArray) / 2;
 
-    if (size <= 1)
-        return arr;
+        mergeSort(array, leftSideArray, middlePart);
+        mergeSort(array, middlePart + 1, rightSideArray);
 
-    int middle = size / 2;
-    std::vector<int> leftArr(arr.begin(), arr.begin() + middle);
-    std::vector<int> rightArr(arr.begin() + middle, arr.end());
-
-    leftArr = mergeSort(leftArr);
-    rightArr = mergeSort(rightArr);
-
-    return merge(leftArr, rightArr);
+        merge(array, leftSideArray, middlePart, rightSideArray);
+    }
 }
 
-// Utility function to print the array
-void printArray(const std::vector<int>& arr) {
-    for (int i : arr)
+void printArray(const std::vector<int>& array) {
+    for (int i : array)
         std::cout << i << " ";
     std::cout << std::endl;
 }
@@ -60,26 +38,27 @@ void printArray(const std::vector<int>& arr) {
 int main() {
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<int> dis(1, 100);
+    std::uniform_int_distribution<int> dist(1, 10000);
 
-    std::vector<int> arr;
-    for (int i = 0; i < 10; i++)
-        arr.push_back(dis(gen));
+    std::vector<int> array(1E8);
+    for (int i = 0; i < 1E8; i++) {
+        array[i] = dist(gen);
+    }
 
     std::cout << "Input array: ";
-    printArray(arr);
+    // printArray(array);
 
-    auto start = std::chrono::high_resolution_clock::now();
+    auto startTime = std::chrono::steady_clock::now();
 
-    arr = mergeSort(arr);
+    mergeSort(array, 0, array.size() - 1);
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> duration = end - start;
+    auto endTime = std::chrono::steady_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
 
     std::cout << "Sorted array: ";
-    printArray(arr);
+    // printArray(array);
 
-    std::cout << "Execution time: " << duration.count() << " seconds" << std::endl;
+    std::cout << "Execution time: " << duration << " microseconds" << std::endl;
 
     return 0;
 }
