@@ -1,49 +1,65 @@
 #include <iostream>
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
-void merge(vector<int>& arr, int left, int mid, int right) {
-    int i = left, j = mid + 1, k = 0;
-    vector<int> temp(right - left + 1);
+void merge(vector<int>& array, int leftsidearray, int middlepartofthearray, int rightsidearray)
+{
+    int a = leftsidearray, b = middlepartofthearray + 1, c = 0;
+    vector<int> temp(rightsidearray - leftsidearray + 1);
 
-    while (i <= mid && j <= right) {
-        if (arr[i] <= arr[j])
-            temp[k++] = arr[i++];
+    while (a <= middlepartofthearray && b <= rightsidearray)
+    {
+        if (array[a] <= array[b])
+            temp[c++] = array[a++];
         else
-            temp[k++] = arr[j++];
+            temp[c++] = array[b++];
     }
 
-    while (i <= mid)
-        temp[k++] = arr[i++];
+    while (a <= middlepartofthearray)
+        temp[c++] = array[a++];
 
-    while (j <= right)
-        temp[k++] = arr[j++];
+    while (b <= rightsidearray)
+        temp[c++] = array[b++];
 
-    for (i = left, k = 0; i <= right; i++, k++)
-        arr[i] = temp[k];
+    for (a = leftsidearray, c = 0; a <= rightsidearray; a++, c++)
+        array[a] = temp[c];
 }
 
-void mergeSort(vector<int>& arr, int left, int right) {
-    if (left >= right)
+void mergeSort(vector<int>& array, int leftsidearray, int rightsidearray)
+{
+    if (leftsidearray >= rightsidearray)
         return;
 
-    int mid = (left + right) / 2;
-    mergeSort(arr, left, mid);
-    mergeSort(arr, mid + 1, right);
-    merge(arr, left, mid, right);
+    int middlepartofthearray = (leftsidearray + rightsidearray) / 2;
+
+    mergeSort(array, leftsidearray, middlepartofthearray);
+    mergeSort(array, middlepartofthearray + 1, rightsidearray);
+
+    merge(array, leftsidearray, middlepartofthearray, rightsidearray);
 }
 
-int main() {
-    vector<int> arr = {9, 4, 2, 7, 5, 1, 8, 3, 6, 0};
-    int n = arr.size();
+int main()
+{
+    int n;
+    cout << "Enter the value of n: ";
+    cin >> n;
 
-    mergeSort(arr, 0, n - 1);
+    vector<int> array(n);
+    srand(time(0));
 
-    cout << "Sorted array: ";
-    for (int num : arr)
-        cout << num << " ";
-    cout << endl;
+    for (int a = 0; a < n; a++)
+        array[a] = rand();
+
+    double start_time, end_time;
+
+    start_time = clock();
+    mergeSort(array, 0, n - 1);
+    end_time = clock();
+
+    cout << "Time: " << (end_time - start_time) / CLOCKS_PER_SEC << " seconds" << endl;
 
     return 0;
 }

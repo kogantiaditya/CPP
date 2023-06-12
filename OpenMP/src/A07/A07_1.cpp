@@ -40,8 +40,8 @@ int main() {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> dist(1, 10000);
 
-    std::vector<int> array(1E8);
-    for (int i = 0; i < 1E8; i++) {
+    std::vector<int> array(100);
+    for (int i = 0; i < 100; i++) {
         array[i] = dist(gen);
     }
 

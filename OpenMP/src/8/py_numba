@@ -1,0 +1,34 @@
+import time
+import numba as nb
+import sys
+
+@nb.njit(parallel=True)
+def calculate_sum(num_steps):
+    step = 1.0 / num_steps
+    sum = 0.0
+
+    for i in nb.prange(num_steps):
+        x = (i + 0.5) * step
+        sum += 4.0 / (1.0 + x * x)
+
+    return sum
+
+def Pi(num_steps, num_threads):
+    begin = time.time()
+
+    sum = calculate_sum(num_steps)
+
+    step = 1.0 / num_steps
+    pi = step * sum
+
+    end = time.time()
+    elapsed = end - begin
+
+    print("Python based:")
+    print("Pi with %d steps is %f in %f secs using %d threads." % (num_steps, pi, elapsed, num_threads))
+
+
+if __name__ == '__main__':
+    num_steps = int(sys.argv[1]) if len(sys.argv) > 1 else 100000000
+    num_threads = int(sys.argv[2]) if len(sys.argv) > 2 else nb.config.NUMBA_NUM_THREADS
+    Pi(num_steps, num_threads)
