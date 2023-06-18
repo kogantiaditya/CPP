@@ -12,7 +12,6 @@ void sumEvenNumbers(uint64& start, uint64& end, uint64& even_sum)
         if ((i & 1) == 0)
             even_sum += i;
     }
-
 }
 
 void sumOddNumbers(uint64& start, uint64& end, uint64& odd_sum)
